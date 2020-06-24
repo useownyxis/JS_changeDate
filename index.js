@@ -2,16 +2,50 @@
  * @param {String} date
  * @returns {Object}
  */
-module.exports = function (date) {
-    var dateArray = date.match(/[0-9]+/gi)
-    var currentDate = new Date(dateArray[0], dateArray[1] - 1, dateArray[2], dateArray[3], dateArray[4])
 
-    Object.defineProperty(this, 'value', {
-        value: currentDate.toString(),
-        writable: true
+
+module.exports = function (date) {
+    
+    if (Object.getOwnPropertyDescriptor(this, 'value') === undefined){
+        var dateArray = date.match(/[0-9]+/gi)
+        Object.defineProperty(this, 'value', {
+            value: new Date(dateArray[0], dateArray[1] - 1, dateArray[2], dateArray[3], dateArray[4]),
+            writable: true 
+        })
+    }
+    
+    
+    var tryChangeDate = function(number, type, operationType){
+        if (number < 0){
+            throw TypeError()
         }
-    )
-    console.log(this)
+        switch (type){
+            case 'years':
+                this.valueate.setFullYear(this.value.getFullYear() + operationType * number)
+                break
+            case 'months':
+                this.value.setMonth(this.value.getMonth() + operationType * number)
+                break
+            case 'days':
+                this.value.setDate(this.value.getDate() + operationType * number)
+                break
+            case 'hours':
+                this.value.setHours(this.value.getHours() + operationType * number)
+                break
+            case 'minutes':
+                this.value.setMinutes(this.value.getMinutes() + operationType * number)
+                break
+            default:
+                throw TypeError()
+                break
+        }
+        Object.defineProperty(this, 'value', {
+            value: this.value,
+            writable: true 
+        })
+        console.log(this.value.toString())
+    }
+
     Date.prototype.toString = function() {
         function pad(number){
             if (number < 10) {
@@ -19,43 +53,12 @@ module.exports = function (date) {
             }
             return number
         }
-
+    
         return this.getFullYear() +
             '-' + pad(this.getMonth() + 1) +
             '-' + pad(this.getDate()) +
             ' ' + pad(this.getHours()) +
             ':' + pad(this.getMinutes())
-    }
-
-    var tryChangeDate = function(number, type, operationType){
-        if (number < 0){
-            throw TypeError()
-        }
-        switch (type){
-            case 'years':
-                currentDate.setFullYear(currentDate.getFullYear() + operationType * number)
-                break
-            case 'months':
-                currentDate.setMonth(currentDate.getMonth() + operationType * number)
-                break
-            case 'days':
-                currentDate.setDate(currentDate.getDate() + operationType * number)
-                break
-            case 'hours':
-                currentDate.setHours(currentDate.getHours() + operationType * number)
-                break
-            case 'minutes':
-                currentDate.setMinutes(currentDate.getMinutes() + operationType * number)
-                break
-            default:
-                throw TypeError()
-                break
-        }
-        Object.defineProperty(this, 'value', {
-            value: currentDate.toString(),
-            writable: true
-            }
-        )
     }
 
     return {
@@ -67,5 +70,6 @@ module.exports = function (date) {
             tryChangeDate(number, type, -1)
             return this
         },
+        value: this.value.toString()
     }
 };
